@@ -1,0 +1,29 @@
+
+Certainly! To achieve this, you can modify the service-worker.js file to intercept requests for the "contact.html" page when the user is offline and serve an "offline.html" page. Additionally, you can include a button in the "offline.html" page that allows the user to redirect to the "index.html" page. Here's how you can do it:
+
+Create offline.html with a redirect button:
+html
+Copy code
+<!-- offline.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline</title>
+</head>
+<body>
+    <h1>You are currently offline</h1>
+    <p>Please check your internet connection and try again.</p>
+    
+    <!-- Button to redirect to index.html -->
+    <button onclick="redirect()">Go to Home</button>
+
+    <script>
+        function redirect() {
+            window.location.href = '/index.html';
+        }
+    </script>
+</body>
+</html>
