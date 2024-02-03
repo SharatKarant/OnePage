@@ -1,12 +1,9 @@
-// service-worker.js
-
 const CACHE_NAME = 'pwa-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/about.html',
-    '/manifest.json',
-    '/icon.png',
+    '/assets/img/favicon.png',
+    '/index.js',
     '/offline.html'
 ];
 
@@ -34,24 +31,25 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     event.respondWith(
         fetch(event.request)
+            .catch(() => caches.match('/offline.html'))
     );
 });
 
 self.addEventListener('message', event => {
     if (event.data && event.data.type === 'trigger-push-notification') {
-        const { title, options } = event.data.payload;
-
-        self.registration.showNotification(title, options);
+        const { title, body } = event.data.payload;
+        const options = {
+            body: body,
+            icon: './assets/img/favicon.png',
+            dir:"ltr",
+            badge:"./assets/img/favicon.png",
+            tag: "confirm-notification",
+            renotify: true,
+            lang: "en-US"
+        };
+    
+        event.waitUntil(
+            self.registration.showNotification(title, options)
+        );
     }
-});
-
-self.addEventListener('push', event => {
-    const options = {
-        body: event.data.text(),
-        icon: '/icon.png',
-    };
-
-    event.waitUntil(
-        self.registration.showNotification('Push Notification', options)
-    );
 });

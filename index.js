@@ -15,7 +15,6 @@ function registerServiceWorker() {
     }
 }
 
-// Function to request location (for demonstration purposes)
 function getLocation() {
     if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -28,7 +27,6 @@ function getLocation() {
     }
 }
 
-// get location detail using lat and long 
 async function getExactLocation(lat, long) {
     try{
         const apiUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${long}&localityLanguage=en`
@@ -40,15 +38,8 @@ async function getExactLocation(lat, long) {
     }
 }
 
-// Register the service worker on page load
 window.addEventListener('load', () => {
     registerServiceWorker();
-
-    // For demonstration purposes, get the location on button click
-    const getLocationButton = document.getElementById('getLocationButton');
-    if (getLocationButton) {
-        getLocationButton.addEventListener('click', getLocation);
-    }
 });
 
 function getNotification() {
@@ -59,16 +50,12 @@ function getNotification() {
         }
         else{
         if ('PushManager' in window && navigator.serviceWorker) {
-            // Ensure the service worker is ready
         navigator.serviceWorker.ready.then(registration => {
             registration.active.postMessage({
                 type: 'trigger-push-notification',
                 payload: {
                     title: 'Custom Push Notification',
-                    options: {
-                        body: 'This is the body of the push notification.',
-                        icon: '/icon.png'
-                    }
+                    body: 'This is the body of the push notification.',
                 }
             });
         });

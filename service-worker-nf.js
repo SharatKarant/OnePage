@@ -1,12 +1,9 @@
-// service-worker.js
-
 const CACHE_NAME = 'pwa-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/about.html',
-    '/manifest.json',
-    '/icon.png',
+    '/assets/img/favicon.png',
+    '/index.js',
     '/offline.html'
 ];
 
@@ -31,46 +28,40 @@ self.addEventListener('activate', event => {
     );
 });
 
+
 self.addEventListener('fetch', event => {
     event.respondWith(
         fetch(event.request)
-            .then(fetchResponse => {
-                // Check if we received a valid response
-                if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
-                    return caches.match(event.request)
-                        .then(cachedResponse => cachedResponse || caches.match('/offline.html') || fetch('/offline.html'));
-                }
-
-                // Clone the response and cache it
-                const responseToCache = fetchResponse.clone();
+            .then(response => {
+                const responseToCache = response.clone();
                 caches.open(CACHE_NAME)
                     .then(cache => cache.put(event.request, responseToCache));
-
-                return fetchResponse;
+                return response;
             })
-            .catch(() => {
-                // If fetching fails, return the cached response or the offline HTML
+            .catch((e) => {
                 return caches.match(event.request)
-                    .then(cachedResponse => cachedResponse || caches.match('/offline.html') || fetch('/offline.html'));
+                    .then(cachedResponse => cachedResponse || caches.match('/offline.html'))
+                    .catch(error => console.error('Error fetching from cache:', error));
             })
     );
 });
+
 
 self.addEventListener('message', event => {
     if (event.data && event.data.type === 'trigger-push-notification') {
-        const { title, options } = event.data.payload;
-
-        self.registration.showNotification(title, options);
+        const { title, body } = event.data.payload;
+        const options = {
+            body: body,
+            icon: './assets/img/favicon.png',
+            dir:"ltr",
+            badge:"./assets/img/favicon.png",
+            tag: "confirm-notification",
+            renotify: true,
+            lang: "en-US"
+        };
+    
+        event.waitUntil(
+            self.registration.showNotification(title, options)
+        );
     }
-});
-
-self.addEventListener('push', event => {
-    const options = {
-        body: event.data.text(),
-        icon: '/icon.png',
-    };
-
-    event.waitUntil(
-        self.registration.showNotification('Push Notification', options)
-    );
 });
